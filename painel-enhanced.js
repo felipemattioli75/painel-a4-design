@@ -103,7 +103,6 @@ async function carregarClientes() {
       <tr>
         <td data-label="Nome">${d.nome}</td>
         <td data-label="Telefone">${d.telefone}</td>
-        <td data-label="E-mail">${d.email}</td>
         <td data-label="Ações"><button class='btn-delete' onclick="deletarCliente('${docSnap.id}')">Excluir</button></td>
       </tr>
     `;
