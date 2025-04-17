@@ -60,4 +60,16 @@ window.addTarefa = async function () {
   mostrarToast("Tarefa adicionada com sucesso!");
 };
 
-window.addProjeto
+window.addProjeto = async function () {
+  const nome = document.getElementById("nomeProjeto").value;
+  const cliente = document.getElementById("clienteProjeto").value;
+  const etapas = document.getElementById("etapasProjeto").value;
+  if (!nome || !cliente || !etapas) return alert("Preencha todos os campos do projeto!");
+  await addDoc(collection(db, "projetos"), { nome, cliente, etapas });
+  document.getElementById("nomeProjeto").value = "";
+  document.getElementById("clienteProjeto").value = "";
+  document.getElementById("etapasProjeto").value = "";
+  await carregarProjetos();
+  mostrarToast("Projeto adicionado com sucesso!");
+};
+
