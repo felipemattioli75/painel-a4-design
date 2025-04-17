@@ -107,73 +107,47 @@
     };
 
     async function carregarClientes() {
-  const tabela = document.getElementById("tabela-clientes");
-  tabela.innerHTML = "<tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Ações</th></tr>";
-  const querySnapshot = await getDocs(collection(db, "clientes"));
-  querySnapshot.forEach((docSnap) => {
-    const d = docSnap.data();
-    tabela.innerHTML += `
-      <tr>
-        <td>${d.nome}</td>
-        <td>${d.telefone}</td>
-        <td>${d.email}</td>
-        <td><button class='btn-delete' onclick="deletarCliente('${docSnap.id}')">Excluir</button></td>
-      </tr>
-    `;
-  });
-}
+      const tabela = document.getElementById("tabela-clientes");
+      tabela.innerHTML = "<tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Ações</th></tr>";
+      const querySnapshot = await getDocs(collection(db, "clientes"));
+      querySnapshot.forEach((docSnap) => {
+        const d = docSnap.data();
+        tabela.innerHTML += `
+          <tr>
+            <td>${d.nome}</td>
+            <td>${d.telefone}</td>
+            <td>${d.email}</td>
+            <td><button class='btn-delete' onclick="deletarCliente('${docSnap.id}')">Excluir</button></td>
+          </tr>
+        `;
+      });
+    }
 
-async function carregarTarefas() {
-  const tabela = document.getElementById("tabela-tarefas");
-  tabela.innerHTML = "<tr><th>Título</th><th>Data</th><th>Status</th><th>Ações</th></tr>";
-  const querySnapshot = await getDocs(collection(db, "tarefas"));
-  querySnapshot.forEach((docSnap) => {
-    const d = docSnap.data();
-    tabela.innerHTML += `
-      <tr>
-        <td>${d.titulo}</td>
-        <td>${d.data}</td>
-        <td>${d.status}</td>
-        <td><button class='btn-delete' onclick="deletarTarefa('${docSnap.id}')">Excluir</button></td>
-      </tr>
-    `;
-  });
-}
+    async function carregarClientesFinanceiroSelect() {
+      const select = document.getElementById("clienteFinanceiro");
+      select.innerHTML = '<option value="">Selecione o cliente</option>';
+      const querySnapshot = await getDocs(collection(db, "clientes"));
+      querySnapshot.forEach((docSnap) => {
+        const d = docSnap.data();
+        const option = document.createElement("option");
+        option.value = d.nome;
+        option.textContent = d.nome;
+        select.appendChild(option);
+      });
+    }
 
-async function carregarProjetos() {
-  const tabela = document.getElementById("tabela-projetos");
-  tabela.innerHTML = "<tr><th>Projeto</th><th>Cliente</th><th>Etapas</th><th>Ações</th></tr>";
-  const querySnapshot = await getDocs(collection(db, "projetos"));
-  querySnapshot.forEach((docSnap) => {
-    const d = docSnap.data();
-    tabela.innerHTML += `
-      <tr>
-        <td>${d.nome}</td>
-        <td>${d.cliente}</td>
-        <td>${d.etapas}</td>
-        <td><button class='btn-delete' onclick="deletarProjeto('${docSnap.id}')">Excluir</button></td>
-      </tr>
-    `;
-  });
-}
-
-async function carregarFinanceiro() {
-  const tabela = document.getElementById("tabela-financeiro");
-  tabela.innerHTML = "<tr><th>Cliente</th><th>Valor</th><th>Data</th><th>Status</th><th>Ações</th></tr>";
-  const querySnapshot = await getDocs(collection(db, "financeiro"));
-  querySnapshot.forEach((docSnap) => {
-    const d = docSnap.data();
-    tabela.innerHTML += `
-      <tr>
-        <td>${d.cliente}</td>
-        <td>${d.valor}</td>
-        <td>${d.data}</td>
-        <td>${d.status}</td>
-        <td><button class='btn-delete' onclick="deletarFinanceiro('${docSnap.id}')">Excluir</button></td>
-      </tr>
-    `;
-  });
-}
+    async function carregarClientesProjetoSelect() {
+      const select = document.getElementById("clienteProjeto");
+      select.innerHTML = '<option value="">Selecione o cliente</option>';
+      const querySnapshot = await getDocs(collection(db, "clientes"));
+      querySnapshot.forEach((docSnap) => {
+        const d = docSnap.data();
+        const option = document.createElement("option");
+        option.value = d.nome;
+        option.textContent = d.nome;
+        select.appendChild(option);
+      });
+    }
 
     window.deletarCliente = async function (id) {
       await deleteDoc(doc(db, "clientes", id));
@@ -200,8 +174,14 @@ async function carregarFinanceiro() {
       const querySnapshot = await getDocs(collection(db, "tarefas"));
       querySnapshot.forEach((docSnap) => {
         const d = docSnap.data();
-        tabela.innerHTML += <tr><td>${d.titulo}</td><td>${d.data}</td><td>${d.status}</td>
-        <td><button class='btn-delete' onclick="deletarTarefa('${docSnap.id}')">Excluir</button></td></tr>;
+        tabela.innerHTML += `
+          <tr>
+            <td>${d.titulo}</td>
+            <td>${d.data}</td>
+            <td>${d.status}</td>
+            <td><button class='btn-delete' onclick="deletarTarefa('${docSnap.id}')">Excluir</button></td>
+          </tr>
+        `;
       });
     }
 
@@ -228,8 +208,14 @@ async function carregarFinanceiro() {
       const querySnapshot = await getDocs(collection(db, "projetos"));
       querySnapshot.forEach((docSnap) => {
         const d = docSnap.data();
-        tabela.innerHTML += <tr><td>${d.nome}</td><td>${d.cliente}</td><td>${d.etapas}</td>
-        <td><button class='btn-delete' onclick="deletarProjeto('${docSnap.id}')">Excluir</button></td></tr>;
+        tabela.innerHTML += `
+          <tr>
+            <td>${d.nome}</td>
+            <td>${d.cliente}</td>
+            <td>${d.etapas}</td>
+            <td><button class='btn-delete' onclick="deletarProjeto('${docSnap.id}')">Excluir</button></td>
+          </tr>
+        `;
       });
     }
 
@@ -258,8 +244,15 @@ async function carregarFinanceiro() {
       const querySnapshot = await getDocs(collection(db, "financeiro"));
       querySnapshot.forEach((docSnap) => {
         const d = docSnap.data();
-        tabela.innerHTML += <tr><td>${d.cliente}</td><td>${d.valor}</td><td>${d.data}</td><td>${d.status}</td>
-        <td><button class='btn-delete' onclick="deletarFinanceiro('${docSnap.id}')">Excluir</button></td></tr>;
+        tabela.innerHTML += `
+          <tr>
+            <td>${d.cliente}</td>
+            <td>${d.valor}</td>
+            <td>${d.data}</td>
+            <td>${d.status}</td>
+            <td><button class='btn-delete' onclick="deletarFinanceiro('${docSnap.id}')">Excluir</button></td>
+          </tr>
+        `;
       });
     }
 
