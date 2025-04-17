@@ -3,77 +3,76 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Testando Firebase</title>
+  <title>Painel A4 Design - Completo</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #111; color: #fff; padding: 2rem; }
-    input { margin: 0.5rem; padding: 0.5rem; border-radius: 5px; border: none; }
-    button { padding: 0.6rem 1rem; background: #00ff88; color: #000; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
-    table { margin-top: 2rem; width: 100%; border-collapse: collapse; background: #222; }
-    th, td { border: 1px solid #444; padding: 0.8rem; }
+    body { font-family: 'Segoe UI', sans-serif; background: #1e1e1e; color: #fff; margin: 0; padding: 0; }
+    header { background: #0a3d62; padding: 1.5rem; font-size: 2rem; text-align: center; }
+    nav { display: flex; gap: 1rem; padding: 1rem; background: #2c2c2c; justify-content: center; }
+    nav button { background: #00d2ff; border: none; padding: 0.6rem 1.2rem; cursor: pointer; border-radius: 5px; font-weight: bold; }
+    section { display: none; padding: 2rem; }
+    .active { display: block; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; background: #2a2a2a; }
+    th, td { padding: 0.8rem; border: 1px solid #444; text-align: left; }
     th { background: #333; }
+    input, select { padding: 0.5rem; border-radius: 5px; border: none; margin-right: 0.5rem; }
+    .btn-add { margin-top: 1rem; background: #00ff88; color: #000; font-weight: bold; }
+    .btn-delete { background: red; color: white; border: none; padding: 0.4rem 0.7rem; cursor: pointer; border-radius: 5px; }
+    .btn-edit { background: orange; color: black; border: none; padding: 0.4rem 0.7rem; cursor: pointer; border-radius: 5px; margin-right: 5px; }
+    .btn-save { background: #3498db; color: white; padding: 0.4rem 0.7rem; border: none; cursor: pointer; border-radius: 5px; margin-left: 5px; }
   </style>
 </head>
 <body>
-  <h1>Teste Firebase - Clientes</h1>
+  <header>Painel Administrativo - A4 Design PRO 🔗 Firebase</header>
+  <nav>
+    <button onclick="showSection('clientes')">👥 Clientes</button>
+    <button onclick="showSection('tarefas')">✅ Tarefas</button>
+    <button onclick="showSection('projetos')">📁 Projetos</button>
+    <button onclick="showSection('financeiro')">💰 Financeiro</button>
+  </nav>
 
-  <input type="text" id="nome" placeholder="Nome">
-  <input type="text" id="telefone" placeholder="Telefone">
-  <input type="email" id="email" placeholder="E-mail">
-  <button id="btnAdicionar">Adicionar Cliente</button>
+  <section id="clientes" class="section active">
+    <h2>Clientes</h2>
+    <input type="text" id="nomeCliente" placeholder="Nome">
+    <input type="text" id="telCliente" placeholder="Telefone">
+    <input type="email" id="emailCliente" placeholder="E-mail">
+    <button class="btn-add" onclick="addCliente()">Adicionar Cliente</button>
+    <table id="tabela-clientes"><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Ações</th></tr></table>
+  </section>
 
-  <table id="tabela">
-    <thead>
-      <tr><th>Nome</th><th>Telefone</th><th>Email</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <section id="tarefas" class="section">
+    <h2>Tarefas</h2>
+    <input type="text" id="tituloTarefa" placeholder="Título da tarefa">
+    <input type="text" id="dataTarefa" placeholder="Data de entrega">
+    <select id="statusTarefa">
+      <option value="pendente">Pendente</option>
+      <option value="concluído">Concluído</option>
+    </select>
+    <button class="btn-add" onclick="addTarefa()">Adicionar Tarefa</button>
+    <table id="tabela-tarefas"><tr><th>Título</th><th>Data</th><th>Status</th><th>Ações</th></tr></table>
+  </section>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+  <section id="projetos" class="section">
+    <h2>Projetos</h2>
+    <input type="text" id="nomeProjeto" placeholder="Nome do projeto">
+    <select id="clienteProjeto"><option value="">Selecione o cliente</option></select>
+    <input type="text" id="etapasProjeto" placeholder="Etapas/Status">
+    <button class="btn-add" onclick="addProjeto()">Adicionar Projeto</button>
+    <table id="tabela-projetos"><tr><th>Projeto</th><th>Cliente</th><th>Etapas</th><th>Ações</th></tr></table>
+  </section>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCiuFQriY5F8t-uI7DBfOqjLXwCummLn20",
-      authDomain: "painel-a4-design.firebaseapp.com",
-      projectId: "painel-a4-design",
-      storageBucket: "painel-a4-design.appspot.com",
-      messagingSenderId: "24296551886",
-      appId: "1:24296551886:web:ea75027d8c0fcdcf13a79f"
-    };
+  <section id="financeiro" class="section">
+    <h2>Financeiro</h2>
+    <select id="clienteFinanceiro"><option value="">Selecione o cliente</option></select>
+    <input type="text" id="valorFinanceiro" placeholder="Valor">
+    <input type="text" id="dataFinanceiro" placeholder="Data">
+    <select id="statusFinanceiro">
+      <option value="pendente">Pendente</option>
+      <option value="pago">Pago</option>
+    </select>
+    <button class="btn-add" onclick="addFinanceiro()">Adicionar Pagamento</button>
+    <table id="tabela-financeiro"><tr><th>Cliente</th><th>Valor</th><th>Data</th><th>Status</th><th>Ações</th></tr></table>
+  </section>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const btn = document.getElementById("btnAdicionar");
-    const tabela = document.querySelector("#tabela tbody");
-
-    async function carregarClientes() {
-      tabela.innerHTML = "";
-      const querySnapshot = await getDocs(collection(db, "clientes"));
-      querySnapshot.forEach((doc) => {
-        const d = doc.data();
-        tabela.innerHTML += `<tr><td>${d.nome}</td><td>${d.telefone}</td><td>${d.email}</td></tr>`;
-      });
-    }
-
-    btn.addEventListener("click", async () => {
-      const nome = document.getElementById("nome").value;
-      const telefone = document.getElementById("telefone").value;
-      const email = document.getElementById("email").value;
-
-      if (!nome || !telefone || !email) {
-        alert("Preencha todos os campos");
-        return;
-      }
-
-      await addDoc(collection(db, "clientes"), { nome, telefone, email });
-      document.getElementById("nome").value = "";
-      document.getElementById("telefone").value = "";
-      document.getElementById("email").value = "";
-      carregarClientes();
-    });
-
-    carregarClientes();
-  </script>
+  <script type="module" src="/painel-a4-firebase.js"></script>
 </body>
 </html>
