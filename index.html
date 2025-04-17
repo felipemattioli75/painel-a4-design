@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Painel A4 Design PRO</title>
+  <title>Painel A4 Design - Completo</title>
   <script type="module" src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
   <script type="module" src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js"></script>
   <style>
     body { font-family: 'Segoe UI', sans-serif; background: #1e1e1e; color: #fff; margin: 0; padding: 0; }
     header { background: #0a3d62; padding: 1.5rem; font-size: 2rem; text-align: center; }
@@ -22,7 +23,7 @@
   </style>
 </head>
 <body>
-  <header>Painel Administrativo - A4 Design PRO</header>
+  <header>Painel Administrativo - A4 Design PRO 🔗 Firebase</header>
   <nav>
     <button onclick="showSection('clientes')">👥 Clientes</button>
     <button onclick="showSection('tarefas')">✅ Tarefas</button>
@@ -67,7 +68,6 @@
       document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
-    // Firebase e Firestore serão conectados via script externo para modularidade
   </script>
 </body>
 </html>
