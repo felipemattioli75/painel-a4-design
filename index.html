@@ -44,6 +44,7 @@
   <header>Painel Administrativo - A4 Design PRO 🔗 Firebase</header>
   <nav>
     <button onclick="showSection('clientes')">👥 Clientes</button>
+    <button onclick="showSection('tarefas')">✅ Tarefas</button>
     <button onclick="showSection('projetos')">📁 Projetos</button>
     <button onclick="showSection('financeiro')">💰 Financeiro</button>
   </nav>
@@ -55,6 +56,18 @@
     <input type="email" id="emailCliente" placeholder="E-mail">
     <button class="btn-add" onclick="addCliente()">Adicionar Cliente</button>
     <table id="tabela-clientes"><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Ações</th></tr></table>
+  </section>
+
+  <section id="tarefas" class="section">
+    <h2>Tarefas</h2>
+    <input type="text" id="tituloTarefa" placeholder="Título da tarefa">
+    <input type="text" id="dataTarefa" placeholder="Data de entrega">
+    <select id="statusTarefa">
+      <option value="pendente">Pendente</option>
+      <option value="concluído">Concluído</option>
+    </select>
+    <button class="btn-add" onclick="addTarefa()">Adicionar Tarefa</button>
+    <table id="tabela-tarefas"><tr><th>Título</th><th>Data</th><th>Status</th><th>Ações</th></tr></table>
   </section>
 
   <section id="projetos" class="section">
@@ -122,6 +135,34 @@
     window.deletarCliente = async function (id) {
       await deleteDoc(doc(db, "clientes", id));
       carregarClientes(); carregarClientesFinanceiroSelect(); carregarClientesProjetoSelect();
+    };
+
+    window.addTarefa = async function () {
+      const titulo = document.getElementById("tituloTarefa").value;
+      const data = document.getElementById("dataTarefa").value;
+      const status = document.getElementById("statusTarefa").value;
+      if (!titulo || !data || !status) return alert("Preencha todos os campos da tarefa!");
+      await addDoc(collection(db, "tarefas"), { titulo, data, status });
+      document.getElementById("tituloTarefa").value = "";
+      document.getElementById("dataTarefa").value = "";
+      document.getElementById("statusTarefa").value = "pendente";
+      carregarTarefas();
+    };
+
+    async function carregarTarefas() {
+      const tabela = document.getElementById("tabela-tarefas");
+      tabela.innerHTML = "<tr><th>Título</th><th>Data</th><th>Status</th><th>Ações</th></tr>";
+      const querySnapshot = await getDocs(collection(db, "tarefas"));
+      querySnapshot.forEach((docSnap) => {
+        const d = docSnap.data();
+        tabela.innerHTML += `<tr><td>${d.titulo}</td><td>${d.data}</td><td>${d.status}</td>
+        <td><button class='btn-delete' onclick="deletarTarefa('${docSnap.id}')">Excluir</button></td></tr>`;
+      });
+    }
+
+    window.deletarTarefa = async function (id) {
+      await deleteDoc(doc(db, "tarefas", id));
+      carregarTarefas();
     };
 
     window.addFinanceiro = async function () {
@@ -208,8 +249,9 @@
       });
     }
 
-    // Inicialização
+    // Inicialização automática
     carregarClientes();
+    carregarTarefas();
     carregarFinanceiro();
     carregarProjetos();
     carregarClientesFinanceiroSelect();
