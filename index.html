@@ -40,7 +40,7 @@
     <table id="tabela-clientes"><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Ações</th></tr></table>
   </section>
 
-  <!-- TAREFAS (a implementar) -->
+  <!-- TAREFAS -->
   <section id="tarefas" class="section">
     <h2>Tarefas</h2>
     <input type="text" id="tituloTarefa" placeholder="Título da tarefa">
@@ -50,7 +50,7 @@
     <table id="tabela-tarefas"><tr><th>Título</th><th>Data</th><th>Status</th><th>Ações</th></tr></table>
   </section>
 
-  <!-- PROJETOS (a implementar) -->
+  <!-- PROJETOS -->
   <section id="projetos" class="section">
     <h2>Projetos</h2>
     <input type="text" id="nomeProjeto" placeholder="Nome do projeto">
@@ -71,13 +71,9 @@
       <option value="pago">Pago</option>
     </select>
     <button class="btn-add" onclick="addFinanceiro()">Adicionar Pagamento</button>
-
-    <table id="tabela-financeiro">
-      <tr><th>Cliente</th><th>Valor</th><th>Data</th><th>Status</th><th>Ações</th></tr>
-    </table>
+    <table id="tabela-financeiro"><tr><th>Cliente</th><th>Valor</th><th>Data</th><th>Status</th><th>Ações</th></tr></table>
   </section>
 
-  <!-- Troca de Seções -->
   <script>
     function showSection(id) {
       document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
@@ -90,14 +86,14 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-      const firebaseConfig = {
-    apiKey: "AIzaSyCiuFQriY5F8t-uI7DBfOqjLXwCummLn20",
-    authDomain: "painel-a4-design.firebaseapp.com",
-    projectId: "painel-a4-design",
-    storageBucket: "painel-a4-design.appspot.com",
-    messagingSenderId: "24296551886",
-    appId: "1:24296551886:web:ea75027d8c0fcdcf13a79f"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCiuFQriY5F8t-uI7DBfOqjLXwCummLn20",
+      authDomain: "painel-a4-design.firebaseapp.com",
+      projectId: "painel-a4-design",
+      storageBucket: "painel-a4-design.appspot.com",
+      messagingSenderId: "24296551886",
+      appId: "1:24296551886:web:ea75027d8c0fcdcf13a79f"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -119,7 +115,7 @@
         document.getElementById("nomeCliente").value = "";
         document.getElementById("telCliente").value = "";
         document.getElementById("emailCliente").value = "";
-        carregarClientes();
+        window.carregarClientes();
       } catch (e) {
         console.error("Erro ao adicionar cliente: ", e);
       }
@@ -145,7 +141,7 @@
 
     window.deletarCliente = async function (id) {
       await deleteDoc(doc(db, "clientes", id));
-      carregarClientes();
+      window.carregarClientes();
     };
 
     // FINANCEIRO
@@ -167,7 +163,7 @@
         document.getElementById("valorFinanceiro").value = "";
         document.getElementById("dataFinanceiro").value = "";
         document.getElementById("statusFinanceiro").value = "pendente";
-        carregarFinanceiro();
+        window.carregarFinanceiro();
       } catch (e) {
         console.error("Erro ao adicionar pagamento: ", e);
       }
@@ -194,12 +190,15 @@
 
     window.deletarFinanceiro = async function (id) {
       await deleteDoc(doc(db, "financeiro", id));
-      carregarFinanceiro();
+      window.carregarFinanceiro();
     };
 
-    // Carrega dados ao iniciar
-    carregarClientes();
-    carregarFinanceiro();
+    // Disponibiliza funções no escopo global e carrega dados
+    window.carregarClientes = carregarClientes;
+    window.carregarFinanceiro = carregarFinanceiro;
+
+    window.carregarClientes();
+    window.carregarFinanceiro();
   </script>
 </body>
 </html>
