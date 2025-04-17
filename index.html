@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A4 Design - Painel Administrativo</title>
+  <style>
+    :root {
+      --bg-color: #1e1e1e;
+      --header-bg: #0a3d62;
+      --nav-bg: #2a2a2a;
+      --primary-color: #00d2ff;
+      --success-color: #00ff88;
+      --danger-color: #ff4f4f;
+      --card-bg: #2b2b2b;
+      --border-color: #444;
+      --text-light: #f0f0f0;
+      --text-muted: #aaa;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg-color); color: var(--text-light); }
+
+    header {
+      background-color: var(--header-bg);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background-color: var(--nav-bg);
+      padding: 0.8rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    nav button:hover {
+      color: var(--primary-color);
+    }
+
+    .section {
+      display: none;
+      padding: 2rem;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .active {
+      display: block;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.5rem;
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 0.9rem;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    th {
+      background-color: #333;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+    }
+
+    tr:nth-child(even) { background-color: #252525; }
+
+    .pago {
+      color: var(--success-color);
+      font-weight: bold;
+    }
+
+    .pendente {
+      color: var(--danger-color);
+      font-weight: bold;
+    }
+
+    .mes-financeiro-btn {
+      background-color: var(--primary-color);
+      color: black;
+      padding: 0.7rem 1.2rem;
+      border: none;
+      margin-top: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+
+    .mes-financeiro-btn:hover {
+      background-color: #00a0cc;
+    }
+
+    .resumo {
+      margin-top: 1.5rem;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: var(--primary-color);
+    }
+
+    .delete-btn {
+      background: transparent;
+      color: var(--danger-color);
+      border: 1px solid var(--danger-color);
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .delete-btn:hover {
+      background: var(--danger-color);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header> Painel Administrativo - A4 Design </header>
+  <nav>
+    <button onclick="showSection('projetos')">📁 Projetos</button>
+    <button onclick="showSection('tarefas')">✅ Tarefas</button>
+    <button onclick="showSection('clientes')">👥 Clientes</button>
+    <button onclick="showSection('financeiro')">💰 Financeiro</button>
+  </nav>
+
+  <section id="projetos" class="section">
+    <h2>Projetos</h2>
+    <p>Área de projetos em construção...</p>
+  </section>
+
+  <section id="tarefas" class="section">
+    <h2>Tarefas</h2>
+    <p>Área de tarefas em construção...</p>
+  </section>
+
+  <section id="clientes" class="section">
+    <h2>Clientes</h2>
+    <table>
+      <tr><th>Nome</th></tr>
+      <tr><td>Doutora Luciana</td></tr>
+      <tr><td>Denis</td></tr>
+      <tr><td>Pincéis Fênix</td></tr>
+      <tr><td>Carmana</td></tr>
+      <tr><td>Tendas SP</td></tr>
+      <tr><td>Doutora Ielsy</td></tr>
+      <tr><td>Ten Stars</td></tr>
+      <tr><td>Magic Cleaning</td></tr>
+    </table>
+  </section>
+
+  <section id="financeiro" class="section">
+    <h2>Financeiro</h2>
+    <table id="tabela-financeiro">
+      <tr>
+        <th>Cliente</th>
+        <th>Valor</th>
+        <th>Data do Pagamento</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </table>
+    <div class="resumo" id="resumo-financeiro"></div>
+  </section>
+
+  <script>
+    const STORAGE_KEY = 'financeiroData';
+
+    const dadosIniciais = [
+      { cliente: 'Doutora Luciana', valor: '300 R$', data: 'Todo dia 05', status: 'pago' },
+      { cliente: 'Denis', valor: '170 R$', data: 'Todo dia 05', status: 'pago' },
+      { cliente: 'Pincéis Fênix', valor: '200 R$', data: 'Todo dia 05', status: 'pago' },
+      { cliente: 'Carmana', valor: '500 R$', data: 'Todo dia 05', status: 'pago' },
+      { cliente: 'Tendas SP', valor: '250 R$', data: 'Todo dia 10', status: 'pago' },
+      { cliente: 'Ten Stars', valor: '139 USD (R$ 700)', data: 'Todo dia 10', status: 'pago' },
+      { cliente: 'Magic Cleaning', valor: '800 R$', data: 'Todo dia 10', status: 'pago' },
+      { cliente: 'Doutora Ielsy', valor: '250 R$', data: 'Todo dia 20', status: 'pendente' }
+    ];
+
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      const target = document.getElementById(id);
+      if (target) {
+        target.classList.add('active');
+        if (id === 'financeiro') {
+          if (!localStorage.getItem(STORAGE_KEY)) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dadosIniciais));
+          }
+          carregarDadosSalvos();
+          calcularResumo();
+        }
+      }
+    }
+
+    function toggleStatus(td) {
+      td.classList.toggle('pago');
+      td.classList.toggle('pendente');
+      td.textContent = td.classList.contains('pago') ? 'Pago' : 'Pendente';
+      salvarDados();
+      calcularResumo();
+    }
+
+    function deleteRow(btn) {
+      const row = btn.parentNode.parentNode;
+      row.remove();
+      salvarDados();
+      calcularResumo();
+    }
+
+    function calcularResumo() {
+      const linhas = document.querySelectorAll('#tabela-financeiro tr');
+      let total = 0;
+      let clientes = 0;
+      linhas.forEach((linha, i) => {
+        if (i === 0) return;
+        const valorTexto = linha.cells[1].textContent.trim();
+        const status = linha.cells[3].className;
+        if (status === 'pago') {
+          let valorNum = 0;
+          if (valorTexto.includes('USD')) {
+            const match = valorTexto.match(/\(R\$ (\d+)/);
+            valorNum = match ? parseFloat(match[1]) : 0;
+          } else {
+            valorNum = parseFloat(valorTexto.replace('R$', '').replace(',', '.'));
+          }
+          total += valorNum;
+        }
+        clientes++;
+      });
+      document.getElementById('resumo-financeiro').innerText = `Total recebido: R$ ${total.toFixed(2)} | Total de clientes: ${clientes}`;
+    }
+
+    function salvarDados() {
+      const dados = [];
+      document.querySelectorAll('#tabela-financeiro tr').forEach((linha, i) => {
+        if (i === 0) return;
+        const cells = linha.querySelectorAll('td');
+        dados.push({
+          cliente: cells[0].innerText,
+          valor: cells[1].innerText,
+          data: cells[2].innerText,
+          status: cells[3].className
+        });
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+    }
+
+    function carregarDadosSalvos() {
+      const tabela = document.getElementById('tabela-financeiro');
+      tabela.innerHTML = '<tr><th>Cliente</th><th>Valor</th><th>Data do Pagamento</th><th>Status</th><th>Ações</th></tr>';
+      const dados = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      dados.forEach(({ cliente, valor, data, status }) => {
+        const row = tabela.insertRow();
+        row.innerHTML = `
+          <td>${cliente}</td>
+          <td>${valor}</td>
+          <td>${data}</td>
+          <td class="${status}" onclick="toggleStatus(this)">${status === 'pago' ? 'Pago' : 'Pendente'}</td>
+          <td><button class="delete-btn" onclick="deleteRow(this)">🗑️</button></td>
+        `;
+      });
+    }
+
+    window.onload = () => {
+      showSection('financeiro');
+    }
+  </script>
+</body>
+</html>
