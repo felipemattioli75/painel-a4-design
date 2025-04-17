@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -30,7 +31,6 @@
     <button onclick="showSection('financeiro')">💰 Financeiro</button>
   </nav>
 
-  <!-- CLIENTES -->
   <section id="clientes" class="section active">
     <h2>Clientes</h2>
     <input type="text" id="nomeCliente" placeholder="Nome">
@@ -40,30 +40,30 @@
     <table id="tabela-clientes"><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Ações</th></tr></table>
   </section>
 
-  <!-- TAREFAS -->
   <section id="tarefas" class="section">
     <h2>Tarefas</h2>
     <input type="text" id="tituloTarefa" placeholder="Título da tarefa">
     <input type="text" id="dataTarefa" placeholder="Data de entrega">
-    <input type="text" id="statusTarefa" placeholder="Status">
-    <button class="btn-add">Adicionar Tarefa</button>
+    <select id="statusTarefa">
+      <option value="pendente">Pendente</option>
+      <option value="concluído">Concluído</option>
+    </select>
+    <button class="btn-add" onclick="addTarefa()">Adicionar Tarefa</button>
     <table id="tabela-tarefas"><tr><th>Título</th><th>Data</th><th>Status</th><th>Ações</th></tr></table>
   </section>
 
-  <!-- PROJETOS -->
   <section id="projetos" class="section">
     <h2>Projetos</h2>
     <input type="text" id="nomeProjeto" placeholder="Nome do projeto">
     <select id="clienteProjeto"><option value="">Selecione o cliente</option></select>
     <input type="text" id="etapasProjeto" placeholder="Etapas/Status">
-    <button class="btn-add">Adicionar Projeto</button>
+    <button class="btn-add" onclick="addProjeto()">Adicionar Projeto</button>
     <table id="tabela-projetos"><tr><th>Projeto</th><th>Cliente</th><th>Etapas</th><th>Ações</th></tr></table>
   </section>
 
-  <!-- FINANCEIRO -->
   <section id="financeiro" class="section">
     <h2>Financeiro</h2>
-    <input type="text" id="clienteFinanceiro" placeholder="Cliente">
+    <select id="clienteFinanceiro"><option value="">Selecione o cliente</option></select>
     <input type="text" id="valorFinanceiro" placeholder="Valor">
     <input type="text" id="dataFinanceiro" placeholder="Data">
     <select id="statusFinanceiro">
@@ -79,126 +79,6 @@
       document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
-  </script>
-
-  <!-- Firebase + Firestore -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCiuFQriY5F8t-uI7DBfOqjLXwCummLn20",
-      authDomain: "painel-a4-design.firebaseapp.com",
-      projectId: "painel-a4-design",
-      storageBucket: "painel-a4-design.appspot.com",
-      messagingSenderId: "24296551886",
-      appId: "1:24296551886:web:ea75027d8c0fcdcf13a79f"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // CLIENTES
-    window.addCliente = async function () {
-      const nome = document.getElementById("nomeCliente").value;
-      const telefone = document.getElementById("telCliente").value;
-      const email = document.getElementById("emailCliente").value;
-
-      if (!nome || !telefone || !email) {
-        alert("Preencha todos os campos!");
-        return;
-      }
-
-      try {
-        await addDoc(collection(db, "clientes"), { nome, telefone, email });
-        alert("Cliente adicionado com sucesso!");
-        document.getElementById("nomeCliente").value = "";
-        document.getElementById("telCliente").value = "";
-        document.getElementById("emailCliente").value = "";
-        window.carregarClientes();
-      } catch (e) {
-        console.error("Erro ao adicionar cliente: ", e);
-      }
-    };
-
-    async function carregarClientes() {
-      const tabela = document.getElementById("tabela-clientes");
-      tabela.innerHTML = "<tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Ações</th></tr>";
-
-      const querySnapshot = await getDocs(collection(db, "clientes"));
-      querySnapshot.forEach((docSnap) => {
-        const dados = docSnap.data();
-        const linha = document.createElement("tr");
-        linha.innerHTML = `
-          <td>${dados.nome}</td>
-          <td>${dados.telefone}</td>
-          <td>${dados.email}</td>
-          <td><button class="btn-delete" onclick="deletarCliente('${docSnap.id}')">Excluir</button></td>
-        `;
-        tabela.appendChild(linha);
-      });
-    }
-
-    window.deletarCliente = async function (id) {
-      await deleteDoc(doc(db, "clientes", id));
-      window.carregarClientes();
-    };
-
-    // FINANCEIRO
-    window.addFinanceiro = async function () {
-      const cliente = document.getElementById("clienteFinanceiro").value;
-      const valor = document.getElementById("valorFinanceiro").value;
-      const data = document.getElementById("dataFinanceiro").value;
-      const status = document.getElementById("statusFinanceiro").value;
-
-      if (!cliente || !valor || !data || !status) {
-        alert("Preencha todos os campos!");
-        return;
-      }
-
-      try {
-        await addDoc(collection(db, "financeiro"), { cliente, valor, data, status });
-        alert("Pagamento registrado com sucesso!");
-        document.getElementById("clienteFinanceiro").value = "";
-        document.getElementById("valorFinanceiro").value = "";
-        document.getElementById("dataFinanceiro").value = "";
-        document.getElementById("statusFinanceiro").value = "pendente";
-        window.carregarFinanceiro();
-      } catch (e) {
-        console.error("Erro ao adicionar pagamento: ", e);
-      }
-    };
-
-    async function carregarFinanceiro() {
-      const tabela = document.getElementById("tabela-financeiro");
-      tabela.innerHTML = "<tr><th>Cliente</th><th>Valor</th><th>Data</th><th>Status</th><th>Ações</th></tr>";
-
-      const querySnapshot = await getDocs(collection(db, "financeiro"));
-      querySnapshot.forEach((docSnap) => {
-        const dados = docSnap.data();
-        const linha = document.createElement("tr");
-        linha.innerHTML = `
-          <td>${dados.cliente}</td>
-          <td>${dados.valor}</td>
-          <td>${dados.data}</td>
-          <td>${dados.status}</td>
-          <td><button class="btn-delete" onclick="deletarFinanceiro('${docSnap.id}')">Excluir</button></td>
-        `;
-        tabela.appendChild(linha);
-      });
-    }
-
-    window.deletarFinanceiro = async function (id) {
-      await deleteDoc(doc(db, "financeiro", id));
-      window.carregarFinanceiro();
-    };
-
-    // Disponibiliza funções no escopo global e carrega dados
-    window.carregarClientes = carregarClientes;
-    window.carregarFinanceiro = carregarFinanceiro;
-
-    window.carregarClientes();
-    window.carregarFinanceiro();
   </script>
 </body>
 </html>
