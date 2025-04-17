@@ -4,8 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Painel A4 Design - Completo</title>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js"></script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCiuFQriY5F8t-uI7DBfOqjLXwCummLn20",
+      authDomain: "painel-a4-design.firebaseapp.com",
+      projectId: "painel-a4-design",
+      storageBucket: "painel-a4-design.appspot.com",
+      messagingSenderId: "24296551886",
+      appId: "1:24296551886:web:ea75027d8c0fcdcf13a79f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.db = db;
+    window.firebaseApp = app;
+    window.firebaseModules = { collection, addDoc, getDocs, deleteDoc, doc };
+  </script>
+
   <style>
     body { font-family: 'Segoe UI', sans-serif; background: #1e1e1e; color: #fff; margin: 0; padding: 0; }
     header { background: #0a3d62; padding: 1.5rem; font-size: 2rem; text-align: center; }
@@ -78,34 +97,28 @@
       document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
-  </script>
 
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCiuFQriY5F8t-uI7DBfOqjLXwCummLn20",
-      authDomain: "painel-a4-design.firebaseapp.com",
-      projectId: "painel-a4-design",
-      storageBucket: "painel-a4-design.appspot.com",
-      messagingSenderId: "24296551886",
-      appId: "1:24296551886:web:ea75027d8c0fcdcf13a79f"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const { collection, addDoc, getDocs, deleteDoc, doc } = window.firebaseModules;
+    const db = window.db;
 
     window.addCliente = async function () {
       const nome = document.getElementById("nomeCliente").value;
       const telefone = document.getElementById("telCliente").value;
       const email = document.getElementById("emailCliente").value;
       if (!nome || !telefone || !email) return alert("Preencha todos os campos!");
+
       await addDoc(collection(db, "clientes"), { nome, telefone, email });
+
       document.getElementById("nomeCliente").value = "";
       document.getElementById("telCliente").value = "";
       document.getElementById("emailCliente").value = "";
-      carregarClientes(); carregarClientesFinanceiroSelect(); carregarClientesProjetoSelect();
+
+      await carregarClientes();
+      await carregarClientesFinanceiroSelect();
+      await carregarClientesProjetoSelect();
+
+      document.getElementById("clienteFinanceiro").value = nome;
+      document.getElementById("clienteProjeto").value = nome;
     };
 
     async function carregarClientes() {
@@ -114,9 +127,8 @@
       const querySnapshot = await getDocs(collection(db, "clientes"));
       querySnapshot.forEach((docSnap) => {
         const d = docSnap.data();
-        const row = `<tr><td>${d.nome}</td><td>${d.telefone}</td><td>${d.email}</td>
+        tabela.innerHTML += `<tr><td>${d.nome}</td><td>${d.telefone}</td><td>${d.email}</td>
         <td><button class='btn-delete' onclick="deletarCliente('${docSnap.id}')">Excluir</button></td></tr>`;
-        tabela.innerHTML += row;
       });
     }
 
@@ -237,6 +249,7 @@
       });
     }
 
+    // Inicialização automática
     carregarClientes();
     carregarTarefas();
     carregarFinanceiro();
