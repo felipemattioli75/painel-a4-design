@@ -26,36 +26,39 @@ let pagamentos = [
   },
 ];
 
-function renderTabela() {
-  const corpoTabela = document.querySelector("#tabela-financeiro tbody");
-  corpoTabela.innerHTML = "";
-
-  pagamentos.forEach((pagamento, index) => {
-    const linha = document.createElement("tr");
-
-    linha.innerHTML = `
-      <td>${pagamento.cliente}</td>
-      <td>${pagamento.valor}</td>
-      <td>${pagamento.data}</td>
-      <td>${pagamento.status}</td>
-      <td>
-        <button class="btn-delete" onclick="excluirLinha(${index})">Excluir</button>
-        <button class="btn-edit" onclick="editarLinha(this, ${index})">Editar</button>
-      </td>
-    `;
-
-    corpoTabela.appendChild(linha);
-  });
+export function carregarFinanceiro() {
+  renderTabela();
 }
 
-function excluirLinha(index) {
+export function addFinanceiro() {
+  const cliente = document.getElementById("clienteFinanceiro").value;
+  const valor = document.getElementById("valorFinanceiro").value;
+  const data = document.getElementById("dataFinanceiro").value;
+  const status = document.getElementById("statusFinanceiro").value;
+
+  if (!cliente || !valor || !data) {
+    alert("Preencha todos os campos!");
+    return;
+  }
+
+  pagamentos.push({ cliente, valor, data, status });
+  renderTabela();
+
+  // Limpar campos
+  document.getElementById("clienteFinanceiro").value = "";
+  document.getElementById("valorFinanceiro").value = "";
+  document.getElementById("dataFinanceiro").value = "";
+  document.getElementById("statusFinanceiro").value = "pendente";
+}
+
+export function deletarFinanceiro(index) {
   if (confirm("Tem certeza que deseja excluir esse pagamento?")) {
     pagamentos.splice(index, 1);
     renderTabela();
   }
 }
 
-function editarLinha(botao, index) {
+export function editarFinanceiro(botao, index) {
   const linha = botao.closest("tr");
   const celulas = linha.querySelectorAll("td");
 
@@ -91,13 +94,4 @@ function salvarEdicao(linha, botao, index) {
     cliente: novoCliente,
     valor: novoValor,
     data: novaData,
-    status: novoStatus,
-  };
-
-  renderTabela();
-}
-
-// Executar quando a página carregar
-window.onload = () => {
-  renderTabela();
-};
+    status
