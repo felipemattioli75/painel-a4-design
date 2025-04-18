@@ -1,120 +1,103 @@
-import { db } from './firebase.js';
-import {
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-import { mostrarToast } from './ui.js';
+// Mock de dados iniciais
+let pagamentos = [
+  {
+    cliente: "Dra. Luciana",
+    valor: "300,00",
+    data: "Todo dia 05",
+    status: "pago",
+  },
+  {
+    cliente: "Dra. Ielsy",
+    valor: "250,00",
+    data: "Todo dia 20",
+    status: "pendente",
+  },
+  {
+    cliente: "Denis Nutricionista",
+    valor: "170,00",
+    data: "Todo dia 05",
+    status: "pago",
+  },
+  {
+    cliente: "Tendas SP",
+    valor: "250,00",
+    data: "Todo dia 05",
+    status: "pendente",
+  },
+];
 
-let editandoFinanceiroId = null;
+function renderTabela() {
+  const corpoTabela = document.querySelector("#tabela-financeiro tbody");
+  corpoTabela.innerHTML = "";
 
-export async function addFinanceiro() {
-  const cliente = document.getElementById("clienteFinanceiro").value;
-  const valor = document.getElementById("valorFinanceiro").value;
-  const data = document.getElementById("dataFinanceiro").value;
-  const status = document.getElementById("statusFinanceiro").value;
+  pagamentos.forEach((pagamento, index) => {
+    const linha = document.createElement("tr");
 
-  if (!cliente || !valor || !data || !status)
-    return alert("Preencha todos os campos financeiros!");
-
-  await addDoc(collection(db, "financeiro"), { cliente, valor, data, status });
-
-  resetForm();
-  await carregarFinanceiro();
-  mostrarToast("Pagamento adicionado com sucesso!");
-}
-
-export async function carregarFinanceiro() {
-  const querySnapshot = await getDocs(collection(db, "financeiro"));
-  const tabela = document.getElementById("tabela-financeiro");
-  tabela.innerHTML = "<tr><th>Cliente</th><th>Valor</th><th>Data</th><th>Status</th><th>Ações</th></tr>";
-
-  let totalPago = 0;
-  let totalPendente = 0;
-
-  querySnapshot.forEach(docSnap => {
-    const fin = docSnap.data();
-    const row = tabela.insertRow();
-
-    const valor = parseFloat(fin.valor.replace(',', '.')) || 0;
-    if (fin.status === "pago") totalPago += valor;
-    else totalPendente += valor;
-
-    row.innerHTML = `
-      <td>${fin.cliente}</td>
-      <td>${fin.valor}</td>
-      <td>${fin.data}</td>
-      <td>${fin.status}</td>
+    linha.innerHTML = `
+      <td>${pagamento.cliente}</td>
+      <td>${pagamento.valor}</td>
+      <td>${pagamento.data}</td>
+      <td>${pagamento.status}</td>
       <td>
-        <button class="btn-delete" onclick="deletarFinanceiro('${docSnap.id}')">Excluir</button>
-        <button class="btn-edit" onclick="editarFinanceiro('${docSnap.id}')">Editar</button>
+        <button class="btn-delete" onclick="excluirLinha(${index})">Excluir</button>
+        <button class="btn-edit" onclick="editarLinha(this, ${index})">Editar</button>
       </td>
     `;
+
+    corpoTabela.appendChild(linha);
   });
-
-  document.getElementById("totalPago").textContent = totalPago.toFixed(2).replace('.', ',');
-  document.getElementById("totalPendente").textContent = totalPendente.toFixed(2).replace('.', ',');
 }
 
-export async function deletarFinanceiro(id) {
-  await deleteDoc(doc(db, "financeiro", id));
-  await carregarFinanceiro();
-  mostrarToast("Registro financeiro removido!");
+function excluirLinha(index) {
+  if (confirm("Tem certeza que deseja excluir esse pagamento?")) {
+    pagamentos.splice(index, 1);
+    renderTabela();
+  }
 }
 
-export async function editarFinanceiro(id) {
-  const docRef = doc(db, "financeiro", id);
-  const querySnapshot = await getDocs(collection(db, "financeiro"));
+function editarLinha(botao, index) {
+  const linha = botao.closest("tr");
+  const celulas = linha.querySelectorAll("td");
 
-  let docData;
-  querySnapshot.forEach(docSnap => {
-    if (docSnap.id === id) docData = docSnap.data();
-  });
+  const cliente = celulas[0].innerText;
+  const valor = celulas[1].innerText;
+  const data = celulas[2].innerText;
+  const status = celulas[3].innerText;
 
-  if (!docData) return alert("Erro ao encontrar o registro.");
+  celulas[0].innerHTML = `<input value="${cliente}" />`;
+  celulas[1].innerHTML = `<input value="${valor}" />`;
+  celulas[2].innerHTML = `<input value="${data}" />`;
+  celulas[3].innerHTML = `
+    <select>
+      <option value="pago" ${status === "pago" ? "selected" : ""}>pago</option>
+      <option value="pendente" ${status === "pendente" ? "selected" : ""}>pendente</option>
+    </select>
+  `;
 
-  editandoFinanceiroId = id;
-
-  document.getElementById("clienteFinanceiro").value = docData.cliente;
-  document.getElementById("valorFinanceiro").value = docData.valor;
-  document.getElementById("dataFinanceiro").value = docData.data;
-  document.getElementById("statusFinanceiro").value = docData.status;
-
-  const btn = document.querySelector('.btn-add');
-  btn.textContent = "Salvar Alterações";
-  btn.style.background = "#ffaa00";
-  btn.onclick = salvarAlteracoesFinanceiro;
+  botao.textContent = "Salvar";
+  botao.onclick = function () {
+    salvarEdicao(linha, botao, index);
+  };
 }
 
-async function salvarAlteracoesFinanceiro() {
-  const cliente = document.getElementById("clienteFinanceiro").value;
-  const valor = document.getElementById("valorFinanceiro").value;
-  const data = document.getElementById("dataFinanceiro").value;
-  const status = document.getElementById("statusFinanceiro").value;
+function salvarEdicao(linha, botao, index) {
+  const inputs = linha.querySelectorAll("input, select");
+  const novoCliente = inputs[0].value;
+  const novoValor = inputs[1].value;
+  const novaData = inputs[2].value;
+  const novoStatus = inputs[3].value;
 
-  if (!cliente || !valor || !data || !status)
-    return alert("Preencha todos os campos!");
+  pagamentos[index] = {
+    cliente: novoCliente,
+    valor: novoValor,
+    data: novaData,
+    status: novoStatus,
+  };
 
-  const docRef = doc(db, "financeiro", editandoFinanceiroId);
-  await setDoc(docRef, { cliente, valor, data, status });
-
-  editandoFinanceiroId = null;
-  resetForm();
-  await carregarFinanceiro();
-  mostrarToast("Pagamento atualizado com sucesso!");
+  renderTabela();
 }
 
-function resetForm() {
-  document.getElementById("clienteFinanceiro").value = "";
-  document.getElementById("valorFinanceiro").value = "";
-  document.getElementById("dataFinanceiro").value = "";
-  document.getElementById("statusFinanceiro").value = "pendente";
-
-  const btn = document.querySelector('.btn-add-financeiro');
-  btn.textContent = "Adicionar Pagamento";
-  btn.style.background = "#00ff88";
-  btn.onclick = window.addFinanceiro;
-}
+// Executar quando a página carregar
+window.onload = () => {
+  renderTabela();
+};
