@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Mini GPT Tarefas</title>
+  <title>Painel de Tarefas com GPT</title>
   <style>
     body {
       background: #121212;
@@ -10,59 +10,95 @@
       font-family: sans-serif;
       padding: 20px;
     }
-    input, button {
+    input, select, button {
       padding: 10px;
       margin-right: 10px;
     }
-    #tarefas {
-      margin-top: 30px;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
     }
-    .tarefa {
-      background: #1e1e1e;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 10px;
+    th, td {
+      padding: 12px;
+      border: 1px solid #333;
+      text-align: left;
+    }
+    th {
+      background-color: #1e1e1e;
+    }
+    tr:nth-child(even) {
+      background-color: #1c1c1c;
+    }
+    tr:hover {
+      background-color: #292929;
     }
   </style>
 </head>
 <body>
-  <h1>Mini GPT Tarefas</h1>
+  <h1>Painel de Tarefas com GPT</h1>
 
-  <input type="text" id="mensagem" placeholder="Ex: Enviar relatório dia 25">
-  <button onclick="gerarTarefa()">Criar com IA</button>
+  <!-- CAMPO PARA CRIAR TAREFAS COM IA -->
+  <div style="margin-bottom: 20px;">
+    <input type="text" id="mensagem" placeholder="Descreva a tarefa (ex: Enviar nota fiscal dia 25)">
+    <button onclick="gerarTarefa()">Criar com IA</button>
+  </div>
 
-  <div id="tarefas"></div>
+  <!-- TABELA DE TAREFAS -->
+  <table>
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Data</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="corpo-tabela">
+      <!-- tarefas serão inseridas aqui -->
+    </tbody>
+  </table>
 
   <script>
     async function gerarTarefa() {
       const input = document.getElementById("mensagem");
       const texto = input.value;
-      if (!texto) return alert("Digite uma tarefa antes, né...");
-
-      const resposta = await fetch("/api/gpt", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mensagem: texto })
-      });
-
-      if (!resposta.ok) {
-        alert("Erro ao falar com o GPT. Você quebrou tudo.");
+      if (!texto.trim()) {
+        alert("Digite algo antes, vai...");
         return;
       }
 
-      const tarefa = await resposta.json();
-      console.log("Tarefa gerada:", tarefa);
+      try {
+        const resposta = await fetch("/api/gpt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mensagem: texto })
+        });
 
-      const div = document.createElement("div");
-      div.className = "tarefa";
-      div.innerHTML = `
-        <strong>${tarefa.titulo}</strong><br>
-        Data: ${tarefa.data}<br>
-        Status: ${tarefa.status}
-      `;
+        if (!resposta.ok) {
+          alert("Erro ao falar com o GPT. Bug no sistema ou no usuário?");
+          return;
+        }
 
-      document.getElementById("tarefas").appendChild(div);
-      input.value = "";
+        const tarefa = await resposta.json();
+        console.log("Tarefa gerada:", tarefa);
+
+        // Adiciona nova linha na tabela
+        const tbody = document.getElementById("corpo-tabela");
+        const linha = document.createElement("tr");
+        linha.innerHTML = `
+          <td>${tarefa.titulo}</td>
+          <td>${tarefa.data}</td>
+          <td>${tarefa.status}</td>
+          <td><button onclick="alert('Funcionalidade de edição não implementada')">Editar</button></td>
+        `;
+        tbody.appendChild(linha);
+
+        input.value = "";
+      } catch (error) {
+        console.error("Erro geral:", error);
+        alert("Algo explodiu. Veja o console.");
+      }
     }
   </script>
 </body>
