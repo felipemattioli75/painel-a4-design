@@ -1,29 +1,9 @@
 // Mock de dados iniciais
 let pagamentos = [
-  {
-    cliente: "Dra. Luciana",
-    valor: "300,00",
-    data: "Todo dia 05",
-    status: "pago",
-  },
-  {
-    cliente: "Dra. Ielsy",
-    valor: "250,00",
-    data: "Todo dia 20",
-    status: "pendente",
-  },
-  {
-    cliente: "Denis Nutricionista",
-    valor: "170,00",
-    data: "Todo dia 05",
-    status: "pago",
-  },
-  {
-    cliente: "Tendas SP",
-    valor: "250,00",
-    data: "Todo dia 05",
-    status: "pendente",
-  },
+  { cliente: "Dra. Luciana", valor: "300,00", data: "Todo dia 05", status: "pago" },
+  { cliente: "Dra. Ielsy", valor: "250,00", data: "Todo dia 20", status: "pendente" },
+  { cliente: "Denis Nutricionista", valor: "170,00", data: "Todo dia 05", status: "pago" },
+  { cliente: "Tendas SP", valor: "250,00", data: "Todo dia 05", status: "pendente" },
 ];
 
 export function carregarFinanceiro() {
@@ -94,12 +74,28 @@ function salvarEdicao(linha, botao, index) {
     cliente: novoCliente,
     valor: novoValor,
     data: novaData,
-    status: novoStatus, // <- Tava faltando isso
+    status: novoStatus,
   };
 
   renderTabela();
 }
 
-window.addFinanceiro = addFinanceiro;
-window.deletarFinanceiro = deletarFinanceiro;
-window.editarFinanceiro = editarFinanceiro;
+function renderTabela() {
+  const corpoTabela = document.querySelector("#tabela-financeiro tbody");
+  corpoTabela.innerHTML = "";
+
+  pagamentos.forEach((pagamento, index) => {
+    const linha = document.createElement("tr");
+    linha.innerHTML = `
+      <td>${pagamento.cliente}</td>
+      <td>${pagamento.valor}</td>
+      <td>${pagamento.data}</td>
+      <td>${pagamento.status}</td>
+      <td>
+        <button class="btn-delete" onclick="deletarFinanceiro(${index})">Excluir</button>
+        <button class="btn-edit" onclick="editarFinanceiro(this, ${index})">Editar</button>
+      </td>
+    `;
+    corpoTabela.appendChild(linha);
+  });
+}
