@@ -5,9 +5,11 @@ import { mostrarToast } from './ui.js';
 
 export async function addFinanceiro() {
   const cliente = document.getElementById("clienteFinanceiro").value;
-  const valorNumerico = parseFloat(valor.replace(',', '.'));
-if (isNaN(valorNumerico)) return alert("Valor inválido. Use número, tipo 250,00.");
-  const data = document.getElementById("dataFinanceiro").value;
+  const valorNumerico = parseFloat(fin.valor.replace(',', '.'));
+if (!isNaN(valorNumerico)) {
+  if (fin.status === "pago") totalPago += valorNumerico;
+  else totalPendente += valorNumerico;
+}
   const status = document.getElementById("statusFinanceiro").value;
   if (!cliente || !valor || !data || !status) return alert("Preencha todos os campos financeiros!");
   await addDoc(collection(db, "financeiro"), { cliente, valor, data, status });
