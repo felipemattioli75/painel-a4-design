@@ -94,4 +94,12 @@ function salvarEdicao(linha, botao, index) {
     cliente: novoCliente,
     valor: novoValor,
     data: novaData,
-    status
+    status: novoStatus, // <- Tava faltando isso
+  };
+
+  renderTabela();
+}
+
+window.addFinanceiro = addFinanceiro;
+window.deletarFinanceiro = deletarFinanceiro;
+window.editarFinanceiro = editarFinanceiro;
