@@ -113,7 +113,7 @@ function resetForm() {
   document.getElementById("dataFinanceiro").value = "";
   document.getElementById("statusFinanceiro").value = "pendente";
 
-  const btn = document.querySelector('.btn-add');
+  const btn = document.querySelector('.btn-add-financeiro');
   btn.textContent = "Adicionar Pagamento";
   btn.style.background = "#00ff88";
   btn.onclick = window.addFinanceiro;
