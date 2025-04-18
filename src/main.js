@@ -1,17 +1,40 @@
 // src/main.js
 import { showSection, mostrarToast, filtrarTabela } from './ui.js';
-import { addCliente, carregarClientes, deletarCliente, carregarClientesSelect } from './clientes.js';
-// Importar os outros módulos depois
+import {
+  addCliente, carregarClientes, deletarCliente, carregarClientesSelect
+} from './clientes.js';
+import {
+  addTarefa, carregarTarefas, deletarTarefa
+} from './tarefas.js';
+import {
+  addProjeto, carregarProjetos, deletarProjeto
+} from './projetos.js';
+import {
+  addFinanceiro, carregarFinanceiro, deletarFinanceiro
+} from './financeiro.js';
 
-// Disponibiliza globalmente pra onclicks (sim, eu odeio isso, mas html velho exige)
+// Deixa as funções disponíveis pro HTML
 window.showSection = showSection;
 window.filtrarTabela = filtrarTabela;
+
 window.addCliente = addCliente;
 window.deletarCliente = deletarCliente;
 
-// Carrega tudo ao abrir
+window.addTarefa = addTarefa;
+window.deletarTarefa = deletarTarefa;
+
+window.addProjeto = addProjeto;
+window.deletarProjeto = deletarProjeto;
+
+window.addFinanceiro = addFinanceiro;
+window.deletarFinanceiro = deletarFinanceiro;
+
+// Init
 document.addEventListener("DOMContentLoaded", async () => {
   await carregarClientes();
   await carregarClientesSelect("clienteFinanceiro");
   await carregarClientesSelect("clienteProjeto");
+  await carregarTarefas();
+  await carregarProjetos();
+  await carregarFinanceiro();
 });
