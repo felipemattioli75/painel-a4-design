@@ -39,13 +39,15 @@ export async function carregarFinanceiro() {
     else totalPendente += valor;
 
     row.innerHTML = `
-      <td>${fin.cliente}</td>
-      <td>${fin.valor}</td>
-      <td>${fin.data}</td>
-      <td>${fin.status}</td>
-      <td><button class="btn-delete" onclick="deletarFinanceiro('${docSnap.id}')">Excluir</button></td>
-    `;
-  });
+  <td>${fin.cliente}</td>
+  <td>${fin.valor}</td>
+  <td>${fin.data}</td>
+  <td>${fin.status}</td>
+  <td>
+    <button class="btn-delete" onclick="deletarFinanceiro('${docSnap.id}')">Excluir</button>
+    <button class="btn-edit" onclick="editarFinanceiro('${docSnap.id}')">Editar</button>
+  </td>
+`;
 
   // Atualiza os valores na tela
   document.getElementById("totalPago").textContent = totalPago.toFixed(2).replace('.', ',');
