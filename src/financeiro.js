@@ -8,7 +8,6 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import { mostrarToast } from './ui.js';
-import { addFinanceiro } from './main.js'; // gambizinha pra resetar o botão depois
 
 export async function addFinanceiro() {
   const cliente = document.getElementById("clienteFinanceiro").value;
@@ -87,29 +86,4 @@ export async function editarFinanceiro(id) {
 
   btn.onclick = async () => {
     const cliente = document.getElementById("clienteFinanceiro").value;
-    const valor = document.getElementById("valorFinanceiro").value;
-    const data = document.getElementById("dataFinanceiro").value;
-    const status = document.getElementById("statusFinanceiro").value;
-
-    if (!cliente || !valor || !data || !status)
-      return alert("Preencha todos os campos!");
-
-    await setDoc(docRef, { cliente, valor, data, status });
-
-    resetForm();
-    await carregarFinanceiro();
-    mostrarToast("Pagamento atualizado com sucesso!");
-  };
-}
-
-function resetForm() {
-  document.getElementById("clienteFinanceiro").value = "";
-  document.getElementById("valorFinanceiro").value = "";
-  document.getElementById("dataFinanceiro").value = "";
-  document.getElementById("statusFinanceiro").value = "pendente";
-
-  const btn = document.querySelector('.btn-add');
-  btn.textContent = "Adicionar Pagamento";
-  btn.style.background = "#00ff88";
-  btn.onclick = addFinanceiro;
-}
+    const valor = document.getElementBy
