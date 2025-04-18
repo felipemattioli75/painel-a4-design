@@ -52,26 +52,16 @@ Saída:
 
     const data = await resposta.json();
 
+    // Logs úteis para depuração
+    console.log('STATUS da OpenAI:', resposta.status);
+    console.log('BODY da resposta:', data);
+
+    if (!resposta.ok) {
+      return res.status(500).json({ error: 'Erro da OpenAI', detalhes: data });
+    }
+
     if (!data.choices || !data.choices[0]) {
       return res.status(500).json({ error: 'Resposta vazia da OpenAI' });
     }
 
-    const texto = data.choices[0].message.content.trim();
-
-    let tarefa;
-    try {
-      tarefa = JSON.parse(texto);
-    } catch (e) {
-      console.error('❌ JSON malformado da IA:\n', texto);
-      return res.status(500).json({
-        error: 'A IA respondeu algo que não dá pra converter em JSON.',
-        resposta_ia: texto
-      });
-    }
-
-    res.status(200).json(tarefa);
-  } catch (err) {
-    console.error('Erro na API GPT:', err);
-    res.status(500).json({ error: 'Erro ao se comunicar com a IA' });
-  }
-}
+    let texto = data.choices
