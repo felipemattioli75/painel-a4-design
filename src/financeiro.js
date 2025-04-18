@@ -9,6 +9,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import { mostrarToast } from './ui.js';
 
+let editandoFinanceiroId = null;
+
 export async function addFinanceiro() {
   const cliente = document.getElementById("clienteFinanceiro").value;
   const valor = document.getElementById("valorFinanceiro").value;
@@ -74,7 +76,8 @@ export async function editarFinanceiro(id) {
 
   if (!docData) return alert("Erro ao encontrar o registro.");
 
-  // Preenche os campos do formulário
+  editandoFinanceiroId = id;
+
   document.getElementById("clienteFinanceiro").value = docData.cliente;
   document.getElementById("valorFinanceiro").value = docData.valor;
   document.getElementById("dataFinanceiro").value = docData.data;
@@ -83,22 +86,25 @@ export async function editarFinanceiro(id) {
   const btn = document.querySelector('.btn-add');
   btn.textContent = "Salvar Alterações";
   btn.style.background = "#ffaa00";
+  btn.onclick = salvarAlteracoesFinanceiro;
+}
 
-  btn.onclick = async () => {
-    const cliente = document.getElementById("clienteFinanceiro").value;
-    const valor = document.getElementById("valorFinanceiro").value;
-    const data = document.getElementById("dataFinanceiro").value;
-    const status = document.getElementById("statusFinanceiro").value;
+async function salvarAlteracoesFinanceiro() {
+  const cliente = document.getElementById("clienteFinanceiro").value;
+  const valor = document.getElementById("valorFinanceiro").value;
+  const data = document.getElementById("dataFinanceiro").value;
+  const status = document.getElementById("statusFinanceiro").value;
 
-    if (!cliente || !valor || !data || !status)
-      return alert("Preencha todos os campos!");
+  if (!cliente || !valor || !data || !status)
+    return alert("Preencha todos os campos!");
 
-    await setDoc(docRef, { cliente, valor, data, status });
+  const docRef = doc(db, "financeiro", editandoFinanceiroId);
+  await setDoc(docRef, { cliente, valor, data, status });
 
-    resetForm();
-    await carregarFinanceiro();
-    mostrarToast("Pagamento atualizado com sucesso!");
-  };
+  editandoFinanceiroId = null;
+  resetForm();
+  await carregarFinanceiro();
+  mostrarToast("Pagamento atualizado com sucesso!");
 }
 
 function resetForm() {
@@ -110,5 +116,5 @@ function resetForm() {
   const btn = document.querySelector('.btn-add');
   btn.textContent = "Adicionar Pagamento";
   btn.style.background = "#00ff88";
-  btn.onclick = window.addFinanceiro; // usando a versão global exposta no main.js
+  btn.onclick = window.addFinanceiro;
 }
