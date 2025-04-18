@@ -25,7 +25,7 @@ import {
   editarFinanceiro
 } from './financeiro.js';
 
-// Expor funções globalmente pra funcionar com onclick no HTML
+// 💥 Aqui é onde a mágica acontece
 window.showSection = showSection;
 window.filtrarTabela = filtrarTabela;
 
