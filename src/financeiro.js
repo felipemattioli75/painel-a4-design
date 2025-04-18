@@ -80,6 +80,30 @@ function salvarEdicao(linha, botao, index) {
   renderTabela();
 }
 
+// 💸 Função que calcula os totais
+function atualizarTotais() {
+  let totalPago = 0;
+  let totalPendente = 0;
+
+  pagamentos.forEach(pagamento => {
+    const valorNumerico = parseFloat(pagamento.valor.replace(",", "."));
+    if (pagamento.status === "pago") {
+      totalPago += valorNumerico;
+    } else {
+      totalPendente += valorNumerico;
+    }
+  });
+
+  document.getElementById("totalPago").textContent = totalPago.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+  });
+
+  document.getElementById("totalPendente").textContent = totalPendente.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+  });
+}
+
+// 🧾 Renderiza a tabela e atualiza os totais
 function renderTabela() {
   const corpoTabela = document.querySelector("#tabela-financeiro tbody");
   corpoTabela.innerHTML = "";
@@ -98,4 +122,6 @@ function renderTabela() {
     `;
     corpoTabela.appendChild(linha);
   });
+
+  atualizarTotais(); // ⚠️ ATUALIZA OS TOTAIS SEMPRE QUE A TABELA FOR RECARREGADA
 }
