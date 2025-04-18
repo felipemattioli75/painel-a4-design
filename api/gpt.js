@@ -10,8 +10,7 @@ export default async function handler(req, res) {
   }
 
   if (!process.env.OPENAI_API_KEY) {
-    console.error('🔒 Variável de ambiente OPENAI_API_KEY não configurada.');
-    return res.status(500).json({ error: 'Chave da API não configurada no servidor.' });
+    return res.status(500).json({ error: 'OPENAI_API_KEY não configurada.' });
   }
 
   const prompt = `
@@ -32,48 +31,43 @@ Saída:
 `;
 
   try {
-    const resposta = await fetch('https://api.openai.com/v1/completions', {
+    const resposta = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'text-davinci-003',
-        prompt: prompt,
-        max_tokens: 100,
-        temperature: 0.4
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.4,
+        max_tokens: 100
       })
     });
 
-    if (!resposta.ok) {
-      const erroTexto = await resposta.text();
-      console.error('❌ Erro da API OpenAI:', erroTexto);
-      return res.status(resposta.status).json({ error: 'Erro da API OpenAI', detalhe: erroTexto });
-    }
-
     const data = await resposta.json();
 
-    if (!data.choices || !data.choices[0]?.text) {
-      return res.status(500).json({ error: 'Resposta inesperada da OpenAI.' });
+    if (!data.choices || !data.choices[0]) {
+      return res.status(500).json({ error: 'Resposta vazia da OpenAI' });
     }
 
+    let texto = data.choices[0].message.content.trim();
     let tarefa;
 
     try {
-      tarefa = JSON.parse(data.choices[0].text.trim());
-    } catch (parseError) {
-      console.error('🚫 Erro ao fazer parse do JSON:', parseError);
-      console.error('Texto retornado:', data.choices[0].text.trim());
-      return res.status(500).json({
-        error: 'Erro ao interpretar resposta da IA',
-        textoOriginal: data.choices[0].text.trim()
-      });
+      tarefa = JSON.parse(texto);
+    } catch (e) {
+      return res.status(500).json({ error: 'Erro ao interpretar JSON da IA', textoBruto: texto });
     }
 
     res.status(200).json(tarefa);
   } catch (err) {
-    console.error('💥 Erro geral no servidor:', err);
-    res.status(500).json({ error: 'Erro ao falar com o GPT' });
+    console.error('Erro na API GPT:', err);
+    res.status(500).json({ error: 'Erro ao se comunicar com a IA' });
   }
 }
