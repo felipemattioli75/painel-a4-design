@@ -97,28 +97,6 @@
       border-radius: 5px;
       font-weight: bold;
     }
-    @media (max-width: 768px) {
-      table, thead, tbody, th, td, tr {
-        display: block;
-        width: 100%;
-      }
-      th {
-        position: absolute;
-        left: -9999px;
-      }
-      td {
-        position: relative;
-        padding-left: 50%;
-        border: none;
-        border-bottom: 1px solid #444;
-      }
-      td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 1rem;
-        font-weight: bold;
-      }
-    }
   </style>
 </head>
 <body>
@@ -150,7 +128,7 @@
     </select>
     <button class="btn-add-tarefa" onclick="addTarefa()">Adicionar Tarefa</button>
 
-    <!-- MINI GPT -->
+    <!-- MINI GPT DENTRO DA ABA -->
     <div style="margin-top: 20px;">
       <input type="text" id="mensagem" placeholder="Descreva a tarefa (ex: Revisar contrato dia 18)">
       <button onclick="gerarTarefa()">Criar com IA</button>
@@ -170,17 +148,7 @@
 
   <section id="financeiro" class="section">
     <h2>Financeiro</h2>
-    <div id="resumoFinanceiro" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-      <div style="background: #222; padding: 1rem; border-radius: 5px;">
-        <strong>Total Pago:</strong> R$ <span id="totalPago">0,00</span>
-      </div>
-      <div style="background: #222; padding: 1rem; border-radius: 5px;">
-        <strong>Total Pendente:</strong> R$ <span id="totalPendente">0,00</span>
-      </div>
-    </div>
-    <select id="clienteFinanceiro">
-      <option value="">Selecione o cliente</option>
-    </select>
+    <select id="clienteFinanceiro"><option value="">Selecione o cliente</option></select>
     <input type="text" id="valorFinanceiro" placeholder="Valor">
     <input type="text" id="dataFinanceiro" placeholder="Ex: Todo dia 20">
     <select id="statusFinanceiro">
@@ -204,8 +172,12 @@
 
   <div id="toast"></div>
 
-  <!-- Função GPT -->
   <script>
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
     async function gerarTarefa() {
       const input = document.getElementById("mensagem");
       const texto = input.value;
@@ -229,21 +201,13 @@
         <td>${tarefa.titulo}</td>
         <td>${tarefa.data}</td>
         <td>${tarefa.status}</td>
-        <td>
-          <button class="btn-edit" onclick="alert('Função de edição ainda não feita')">Editar</button>
-        </td>
+        <td><button class="btn-edit" onclick="alert('Função de edição ainda não feita')">Editar</button></td>
       `;
       tabela.appendChild(novaLinha);
       input.value = "";
     }
-
-    function showSection(id) {
-      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
-
-    // Suas funções addCliente, addTarefa, etc vêm no seu JS principal
   </script>
+
   <script type="module" src="src/main.js"></script>
 </body>
 </html>
