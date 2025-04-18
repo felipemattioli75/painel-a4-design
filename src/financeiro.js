@@ -22,9 +22,19 @@ export async function carregarFinanceiro() {
   const querySnapshot = await getDocs(collection(db, "financeiro"));
   const tabela = document.getElementById("tabela-financeiro");
   tabela.innerHTML = "<tr><th>Cliente</th><th>Valor</th><th>Data</th><th>Status</th><th>Ações</th></tr>";
+
+  let totalPago = 0;
+  let totalPendente = 0;
+
   querySnapshot.forEach(docSnap => {
     const fin = docSnap.data();
     const row = tabela.insertRow();
+
+    // Soma os valores
+    const valor = parseFloat(fin.valor.replace(',', '.')) || 0;
+    if (fin.status === "pago") totalPago += valor;
+    else totalPendente += valor;
+
     row.innerHTML = `
       <td>${fin.cliente}</td>
       <td>${fin.valor}</td>
@@ -33,6 +43,10 @@ export async function carregarFinanceiro() {
       <td><button class="btn-delete" onclick="deletarFinanceiro('${docSnap.id}')">Excluir</button></td>
     `;
   });
+
+  // Atualiza os valores na tela
+  document.getElementById("totalPago").textContent = totalPago.toFixed(2).replace('.', ',');
+  document.getElementById("totalPendente").textContent = totalPendente.toFixed(2).replace('.', ',');
 }
 
 export async function deletarFinanceiro(id) {
