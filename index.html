@@ -1,160 +1,69 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Painel A4 Design - Completo</title>
+  <meta charset="UTF-8">
+  <title>Mini GPT Tarefas</title>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; background: #1e1e1e; color: #fff; margin: 0; padding: 0; }
-    header { background: #0a3d62; padding: 1.5rem; font-size: 2rem; text-align: center; }
-    nav { display: flex; gap: 1rem; padding: 1rem; background: #2c2c2c; justify-content: center; flex-wrap: wrap; }
-    nav button { background: #00d2ff; border: none; padding: 0.6rem 1.2rem; cursor: pointer; border-radius: 5px; font-weight: bold; }
-    section { display: none; padding: 2rem; }
-    .active { display: block; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; background: #2a2a2a; }
-    th, td { padding: 0.8rem; border: 1px solid #444; text-align: left; }
-    th { background: #333; }
-    input, select { padding: 0.5rem; border-radius: 5px; border: none; margin-right: 0.5rem; }
-    .btn-add-cliente,
-    .btn-add-tarefa,
-    .btn-add-projeto,
-    .btn-add-financeiro {
-      margin-top: 1rem;
-      background: #00ff88;
-      color: #000;
-      font-weight: bold;
-      padding: 0.6rem 1.2rem;
-      border-radius: 5px;
-      cursor: pointer;
-      border: none;
-    }
-    .btn-delete {
-      background: red;
+    body {
+      background: #121212;
       color: white;
-      border: none;
-      padding: 0.4rem 0.7rem;
-      cursor: pointer;
-      border-radius: 5px;
+      font-family: sans-serif;
+      padding: 20px;
     }
-    .btn-edit {
-      background: #ffaa00;
-      color: #000;
-      border: none;
-      padding: 0.4rem 0.7rem;
-      cursor: pointer;
-      border-radius: 5px;
-      margin-left: 5px;
+    input, button {
+      padding: 10px;
+      margin-right: 10px;
     }
-    #toast {
-      display:none;
-      position:fixed;
-      bottom:20px;
-      right:20px;
-      background:#00ff88;
-      color:#000;
-      padding:1rem;
-      border-radius:5px;
-      font-weight: bold;
+    #tarefas {
+      margin-top: 30px;
     }
-    @media (max-width: 768px) {
-      table, thead, tbody, th, td, tr {
-        display: block;
-        width: 100%;
-      }
-      th { position: absolute; left: -9999px; }
-      td {
-        position: relative;
-        padding-left: 50%;
-        border: none;
-        border-bottom: 1px solid #444;
-      }
-      td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 1rem;
-        font-weight: bold;
-      }
+    .tarefa {
+      background: #1e1e1e;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
-  <header>Painel Administrativo - A4 Design PRO 🔗 Firebase</header>
-  <nav>
-    <button onclick="showSection('clientes')">👥 Clientes</button>
-    <button onclick="showSection('tarefas')">✅ Tarefas</button>
-    <button onclick="showSection('projetos')">📁 Projetos</button>
-    <button onclick="showSection('financeiro')">💰 Financeiro</button>
-  </nav>
+  <h1>Mini GPT Tarefas</h1>
 
-  <section id="clientes" class="section active">
-    <h2>Clientes</h2>
-    <input type="text" id="filtroClientes" placeholder="Buscar cliente..." onkeyup="filtrarTabela('tabela-clientes', this.value)">
-    <br><br>
-    <input type="text" id="nomeCliente" placeholder="Nome">
-    <input type="text" id="telCliente" placeholder="Telefone">
-    <button class="btn-add-cliente" onclick="addCliente()">Adicionar Cliente</button>
-    <table id="tabela-clientes"><tr><th>Nome</th><th>Telefone</th><th>Ações</th></tr></table>
-  </section>
+  <input type="text" id="mensagem" placeholder="Ex: Enviar relatório dia 25">
+  <button onclick="gerarTarefa()">Criar com IA</button>
 
-  <section id="tarefas" class="section">
-    <h2>Tarefas</h2>
-    <input type="text" id="tituloTarefa" placeholder="Título da tarefa">
-    <input type="date" id="dataTarefa">
-    <select id="statusTarefa">
-      <option value="pendente">Pendente</option>
-      <option value="concluído">Concluído</option>
-    </select>
-    <button class="btn-add-tarefa" onclick="addTarefa()">Adicionar Tarefa</button>
-    <table id="tabela-tarefas"><tr><th>Título</th><th>Data</th><th>Status</th><th>Ações</th></tr></table>
-  </section>
+  <div id="tarefas"></div>
 
-  <section id="projetos" class="section">
-    <h2>Projetos</h2>
-    <input type="text" id="nomeProjeto" placeholder="Nome do projeto">
-    <select id="clienteProjeto"><option value="">Selecione o cliente</option></select>
-    <input type="text" id="etapasProjeto" placeholder="Etapas/Status">
-    <button class="btn-add-projeto" onclick="addProjeto()">Adicionar Projeto</button>
-    <table id="tabela-projetos"><tr><th>Projeto</th><th>Cliente</th><th>Etapas</th><th>Ações</th></tr></table>
-  </section>
+  <script>
+    async function gerarTarefa() {
+      const input = document.getElementById("mensagem");
+      const texto = input.value;
+      if (!texto) return alert("Digite uma tarefa antes, né...");
 
-  <section id="financeiro" class="section">
-  <h2>Financeiro</h2>
-  <div id="resumoFinanceiro" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-    <div style="background: #222; padding: 1rem; border-radius: 5px;">
-      <strong>Total Pago:</strong> R$ <span id="totalPago">0,00</span>
-    </div>
-    <div style="background: #222; padding: 1rem; border-radius: 5px;">
-      <strong>Total Pendente:</strong> R$ <span id="totalPendente">0,00</span>
-    </div>
-  </div>
+      const resposta = await fetch("/api/gpt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mensagem: texto })
+      });
 
-  <select id="clienteFinanceiro">
-    <option value="">Selecione o cliente</option>
-  </select>
-  <input type="text" id="valorFinanceiro" placeholder="Valor">
-  <input type="text" id="dataFinanceiro" placeholder="Ex: Todo dia 20">
-  <select id="statusFinanceiro">
-    <option value="pendente">Pendente</option>
-    <option value="pago">Pago</option>
-  </select>
-  <button class="btn-add-financeiro" onclick="adicionarPagamento()">Adicionar Pagamento</button>
+      if (!resposta.ok) {
+        alert("Erro ao falar com o GPT. Você quebrou tudo.");
+        return;
+      }
 
-  <table id="tabela-financeiro">
-    <thead>
-      <tr>
-        <th>Cliente</th>
-        <th>Valor</th>
-        <th>Data</th>
-        <th>Status</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</section>
+      const tarefa = await resposta.json();
+      console.log("Tarefa gerada:", tarefa);
 
-  <div id="toast"></div>
+      const div = document.createElement("div");
+      div.className = "tarefa";
+      div.innerHTML = `
+        <strong>${tarefa.titulo}</strong><br>
+        Data: ${tarefa.data}<br>
+        Status: ${tarefa.status}
+      `;
 
-  <script type="module" src="src/main.js"></script>
+      document.getElementById("tarefas").appendChild(div);
+      input.value = "";
+    }
+  </script>
 </body>
 </html>
