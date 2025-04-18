@@ -36,6 +36,7 @@ export async function carregarFinanceiro() {
   querySnapshot.forEach(docSnap => {
     const fin = docSnap.data();
     const row = tabela.insertRow();
+    row.setAttribute('data-id', docSnap.id);
 
     const valor = parseFloat(fin.valor.replace(',', '.')) || 0;
     if (fin.status === "pago") totalPago += valor;
@@ -65,16 +66,17 @@ export async function deletarFinanceiro(id) {
 
 export async function editarFinanceiro(id) {
   const docRef = doc(db, "financeiro", id);
-  const querySnapshot = await getDocs(collection(db, "financeiro"));
-
+  const docSnap = await getDocs(collection(db, "financeiro"));
   let docData;
-  querySnapshot.forEach(docSnap => {
-    if (docSnap.id === id) docData = docSnap.data();
+
+  docSnap.forEach(doc => {
+    if (doc.id === id) {
+      docData = doc.data();
+    }
   });
 
   if (!docData) return alert("Erro ao encontrar o registro.");
 
-  // Preenche os campos do formulário
   document.getElementById("clienteFinanceiro").value = docData.cliente;
   document.getElementById("valorFinanceiro").value = docData.valor;
   document.getElementById("dataFinanceiro").value = docData.data;
@@ -86,4 +88,32 @@ export async function editarFinanceiro(id) {
 
   btn.onclick = async () => {
     const cliente = document.getElementById("clienteFinanceiro").value;
-    const valor = document.getElementBy
+    const valor = document.getElementById("valorFinanceiro").value;
+    const data = document.getElementById("dataFinanceiro").value;
+    const status = document.getElementById("statusFinanceiro").value;
+
+    if (!cliente || !valor || !data || !status)
+      return alert("Preencha todos os campos!");
+
+    await setDoc(docRef, { cliente, valor, data, status });
+
+    resetForm();
+    await carregarFinanceiro();
+    mostrarToast("Pagamento atualizado com sucesso!");
+  };
+}
+
+function resetForm() {
+  document.getElementById("clienteFinanceiro").value = "";
+  document.getElementById("valorFinanceiro").value = "";
+  document.getElementById("dataFinanceiro").value = "";
+  document.getElementById("statusFinanceiro").value = "pendente";
+
+  const btn = document.querySelector('.btn-add');
+  btn.textContent = "Adicionar Pagamento";
+  btn.style.background = "#00ff88";
+  btn.onclick = addFinanceiro;
+}
+
+::contentReference[oaicite:2]{index=2}
+ 
