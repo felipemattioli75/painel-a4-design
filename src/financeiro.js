@@ -5,7 +5,8 @@ import { mostrarToast } from './ui.js';
 
 export async function addFinanceiro() {
   const cliente = document.getElementById("clienteFinanceiro").value;
-  const valor = document.getElementById("valorFinanceiro").value;
+  const valorNumerico = parseFloat(valor.replace(',', '.'));
+if (isNaN(valorNumerico)) return alert("Valor inválido. Use número, tipo 250,00.");
   const data = document.getElementById("dataFinanceiro").value;
   const status = document.getElementById("statusFinanceiro").value;
   if (!cliente || !valor || !data || !status) return alert("Preencha todos os campos financeiros!");
