@@ -36,7 +36,6 @@ export async function carregarFinanceiro() {
   querySnapshot.forEach(docSnap => {
     const fin = docSnap.data();
     const row = tabela.insertRow();
-    row.setAttribute('data-id', docSnap.id);
 
     const valor = parseFloat(fin.valor.replace(',', '.')) || 0;
     if (fin.status === "pago") totalPago += valor;
@@ -66,17 +65,16 @@ export async function deletarFinanceiro(id) {
 
 export async function editarFinanceiro(id) {
   const docRef = doc(db, "financeiro", id);
-  const docSnap = await getDocs(collection(db, "financeiro"));
-  let docData;
+  const querySnapshot = await getDocs(collection(db, "financeiro"));
 
-  docSnap.forEach(doc => {
-    if (doc.id === id) {
-      docData = doc.data();
-    }
+  let docData;
+  querySnapshot.forEach(docSnap => {
+    if (docSnap.id === id) docData = docSnap.data();
   });
 
   if (!docData) return alert("Erro ao encontrar o registro.");
 
+  // Preenche os campos do formulário
   document.getElementById("clienteFinanceiro").value = docData.cliente;
   document.getElementById("valorFinanceiro").value = docData.valor;
   document.getElementById("dataFinanceiro").value = docData.data;
@@ -112,8 +110,5 @@ function resetForm() {
   const btn = document.querySelector('.btn-add');
   btn.textContent = "Adicionar Pagamento";
   btn.style.background = "#00ff88";
-  btn.onclick = addFinanceiro;
+  btn.onclick = window.addFinanceiro; // usando a versão global exposta no main.js
 }
-
-::contentReference[oaicite:2]{index=2}
- 
