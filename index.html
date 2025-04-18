@@ -93,6 +93,14 @@
 
   <section id="financeiro" class="section">
     <h2>Financeiro</h2>
+    <div id="resumoFinanceiro" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+  <div style="background: #222; padding: 1rem; border-radius: 5px;">
+    <strong>Total Pago:</strong> R$ <span id="totalPago">0,00</span>
+  </div>
+  <div style="background: #222; padding: 1rem; border-radius: 5px;">
+    <strong>Total Pendente:</strong> R$ <span id="totalPendente">0,00</span>
+  </div>
+</div>
     <select id="clienteFinanceiro"><option value="">Selecione o cliente</option></select>
     <input type="text" id="valorFinanceiro" placeholder="Valor">
     <input type="text" id="dataFinanceiro" placeholder="Ex: Todo dia 20">
