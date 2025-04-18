@@ -33,23 +33,22 @@ export async function carregarFinanceiro() {
     const fin = docSnap.data();
     const row = tabela.insertRow();
 
-    // Soma os valores
     const valor = parseFloat(fin.valor.replace(',', '.')) || 0;
     if (fin.status === "pago") totalPago += valor;
     else totalPendente += valor;
 
     row.innerHTML = `
-  <td>${fin.cliente}</td>
-  <td>${fin.valor}</td>
-  <td>${fin.data}</td>
-  <td>${fin.status}</td>
-  <td>
-    <button class="btn-delete" onclick="deletarFinanceiro('${docSnap.id}')">Excluir</button>
-    <button class="btn-edit" onclick="editarFinanceiro('${docSnap.id}')">Editar</button>
-  </td>
-`;
+      <td>${fin.cliente}</td>
+      <td>${fin.valor}</td>
+      <td>${fin.data}</td>
+      <td>${fin.status}</td>
+      <td>
+        <button class="btn-delete" onclick="deletarFinanceiro('${docSnap.id}')">Excluir</button>
+        <button class="btn-edit" onclick="editarFinanceiro('${docSnap.id}')">Editar</button>
+      </td>
+    `;
+  });
 
-  // Atualiza os valores na tela
   document.getElementById("totalPago").textContent = totalPago.toFixed(2).replace('.', ',');
   document.getElementById("totalPendente").textContent = totalPendente.toFixed(2).replace('.', ',');
 }
