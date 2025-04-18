@@ -56,13 +56,17 @@ Saída:
       return res.status(500).json({ error: 'Resposta vazia da OpenAI' });
     }
 
-    let texto = data.choices[0].message.content.trim();
-    let tarefa;
+    const texto = data.choices[0].message.content.trim();
 
+    let tarefa;
     try {
       tarefa = JSON.parse(texto);
     } catch (e) {
-      return res.status(500).json({ error: 'Erro ao interpretar JSON da IA', textoBruto: texto });
+      console.error('❌ JSON malformado da IA:\n', texto);
+      return res.status(500).json({
+        error: 'A IA respondeu algo que não dá pra converter em JSON.',
+        resposta_ia: texto
+      });
     }
 
     res.status(200).json(tarefa);
